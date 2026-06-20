@@ -123,9 +123,12 @@ export async function GET(req: Request) {
         </div>
 
         {/* footer CTA */}
-        <div style={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center", padding: "28px 80px 80px" }}>
+        <div style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 12, padding: "28px 80px 72px" }}>
           <div style={{ fontSize: 25, fontWeight: 700, color: "rgba(255,255,255,0.62)", letterSpacing: 2, display: "flex" }}>
             ★ {siteLabel} 에서 나도 궁합 보기
+          </div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "rgba(255,255,255,0.4)", letterSpacing: 1, display: "flex" }}>
+            재미·참고용 콘텐츠예요 · 중요한 결정의 근거가 아니에요
           </div>
         </div>
       </div>

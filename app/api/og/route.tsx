@@ -224,6 +224,10 @@ export async function GET(req: Request) {
             <div style={{ display: "flex" }}>{footerMeta}</div>
             <div style={{ display: "flex" }}>★ {siteLabel}</div>
           </div>
+
+          <div style={{ display: "flex", fontSize: 16, color: "rgba(255,255,255,0.42)", fontWeight: 700, letterSpacing: 1 }}>
+            재미·참고용 콘텐츠예요 · 의료·법률·재무 결정의 근거가 아니에요
+          </div>
         </div>
       </div>
     ),

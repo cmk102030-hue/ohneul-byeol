@@ -270,6 +270,10 @@ export default function Home() {
             카드 공유 →
           </button>
         </div>
+
+        <p className="text-[10.5px] text-white/30 leading-relaxed pt-2 px-1 text-center">
+          ☾ 운세·궁합은 재미와 참고를 위한 콘텐츠예요. 의료·법률·재무 등 중요한 결정의 근거로 삼지 마세요.
+        </p>
       </div>
 
       {showCollection && (

@@ -312,6 +312,10 @@ export default function CompatView({
               ))}
             </div>
 
+            <p className="text-[10px] text-white/30 leading-relaxed px-1">
+              ☾ 궁합은 재미·참고용이에요. 관계의 중요한 결정은 두 사람의 대화로 정하세요.
+            </p>
+
             <div className="flex gap-2">
               <button
                 onClick={() => setResult(null)}

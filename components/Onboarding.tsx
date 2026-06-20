@@ -63,6 +63,7 @@ export default function Onboarding({ onDone }: { onDone: (p: BirthProfile) => vo
   const [minute, setMinute] = useState("00");
   const [mbti, setMbti] = useState("");
   const [nickname, setNickname] = useState("");
+  const [agreed, setAgreed] = useState(false);
 
   const dayOptions = useMemo(() => {
     const max = year && month ? daysInMonth(Number(year), Number(month)) : 31;
@@ -215,6 +216,23 @@ export default function Onboarding({ onDone }: { onDone: (p: BirthProfile) => vo
               onChange={(e) => setNickname(e.target.value)}
               className="w-full bg-bg-1 border border-white/10 rounded-xl px-4 py-4 text-white text-base font-bold focus:border-accent outline-none placeholder:font-normal placeholder:text-white/30"
             />
+
+            <label className="flex items-start gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                className="mt-0.5 w-4 h-4 accent-accent shrink-0"
+              />
+              <span className="text-[12px] text-white/55 leading-relaxed">
+                <span className="text-accent font-bold">[필수]</span> 생년월일·MBTI 등 입력 정보의 수집·이용과{" "}
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-white/80 hover:text-white">이용약관</a>
+                ·
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline text-white/80 hover:text-white">개인정보처리방침</a>
+                에 동의해요.
+              </span>
+            </label>
+
             <div className="flex gap-2">
               <button
                 onClick={() => setStep(2)}
@@ -223,6 +241,7 @@ export default function Onboarding({ onDone }: { onDone: (p: BirthProfile) => vo
                 ← 뒤로
               </button>
               <button
+                disabled={!agreed}
                 onClick={() =>
                   onDone({
                     birthDate: `${year}-${pad(month)}-${pad(day)}`,
@@ -231,7 +250,7 @@ export default function Onboarding({ onDone }: { onDone: (p: BirthProfile) => vo
                     nickname: nickname.trim() || undefined,
                   })
                 }
-                className="flex-1 bg-gradient-to-r from-accent to-accent-pink text-bg-0 font-black py-4 rounded-2xl shadow-[0_8px_24px_-8px_rgba(196,163,255,0.6)] hover:scale-[1.01] active:scale-[0.99] transition"
+                className="flex-1 bg-gradient-to-r from-accent to-accent-pink text-bg-0 font-black py-4 rounded-2xl shadow-[0_8px_24px_-8px_rgba(196,163,255,0.6)] hover:scale-[1.01] active:scale-[0.99] transition disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 오늘 운세 보기 →
               </button>

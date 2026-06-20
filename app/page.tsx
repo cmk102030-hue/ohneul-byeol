@@ -274,6 +274,11 @@ export default function Home() {
         <p className="text-[10.5px] text-white/30 leading-relaxed pt-2 px-1 text-center">
           ☾ 운세·궁합은 재미와 참고를 위한 콘텐츠예요. 의료·법률·재무 등 중요한 결정의 근거로 삼지 마세요.
         </p>
+        <div className="flex justify-center gap-3 text-[10.5px] text-white/35 pt-1">
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition">이용약관</a>
+          <span className="text-white/15">·</span>
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-white/70 transition">개인정보처리방침</a>
+        </div>
       </div>
 
       {showCollection && (

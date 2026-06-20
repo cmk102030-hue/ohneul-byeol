@@ -5,6 +5,7 @@ import { getMBTI } from "@/lib/mbti";
 import { generateCompat, type CompatPerson } from "@/lib/compat";
 import { VALID_TONES, type Tone } from "@/lib/tones";
 import { guardRequest } from "@/lib/edge-guard";
+import { sanitizeName } from "@/lib/guardrail";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -25,7 +26,7 @@ function buildPerson(p: PersonReq, fallbackName: string): CompatPerson {
   const saju = getBaZi(p.birthDate, p.birthTime && /^\d{2}:\d{2}$/.test(p.birthTime) ? p.birthTime : "12:00");
   const mbti = getMBTI(p.mbti);
   return {
-    name: (p.name || "").trim().slice(0, 12) || fallbackName,
+    name: sanitizeName(p.name) || fallbackName,
     zodiac,
     ilgan: saju.ilgan,
     zodiacAnimal: saju.zodiacAnimal,
@@ -62,7 +63,11 @@ export async function POST(req: NextRequest) {
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    return NextResponse.json({ error: `Compat failed: ${msg}` }, { status: 500 });
+    console.error("[compat] error:", msg);
+    return NextResponse.json(
+      { error: "궁합을 보지 못했어요. 잠시 후 다시 시도해 주세요." },
+      { status: 500 },
+    );
   }
 }
 

@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { sanitizeName } from "@/lib/guardrail";
 
 export const runtime = "edge";
 
@@ -19,11 +20,11 @@ async function loadFont(url: string): Promise<ArrayBuffer | null> {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const meName = (searchParams.get("meName") ?? "나").slice(0, 12);
+  const meName = sanitizeName(searchParams.get("meName")) || "나";
   const meSymbol = searchParams.get("meSymbol") ?? "★";
   const meZodiac = searchParams.get("meZodiac") ?? "";
   const meMbti = searchParams.get("meMbti") ?? "";
-  const frName = (searchParams.get("frName") ?? "상대").slice(0, 12);
+  const frName = sanitizeName(searchParams.get("frName")) || "상대";
   const frSymbol = searchParams.get("frSymbol") ?? "☾";
   const frZodiac = searchParams.get("frZodiac") ?? "";
   const frMbti = searchParams.get("frMbti") ?? "";

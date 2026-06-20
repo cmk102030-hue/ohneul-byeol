@@ -17,8 +17,8 @@ export type GuardrailResult = {
 };
 
 const PATTERNS: Array<{ category: GuardrailCategory; regex: RegExp }> = [
-  // 자살·자해 (한국어 + 영어 핵심)
-  { category: "self_harm", regex: /(자살|자해|목매|투신|뛰어내|극단적 선택|숨고\s*싶|죽고\s*싶|살기\s*싫|살\s*가치|self[- ]harm|suicide|kill\s+myself)/i },
+  // 자살·자해 (한국어 + 영어 핵심). 공백·변형·은어 보강.
+  { category: "self_harm", regex: /(자\s*살|자\s*해|목\s*매|투신|뛰어\s*내|극단적\s*선택|숨고\s*싶|죽고\s*싶|죽어\s*버리|살기\s*싫|살\s*가치|없어지고\s*싶|사라지고\s*싶|끝내고\s*싶|손목\s*긋|self[- ]?harm|suicide|kill\s+myself|end\s+my\s+life)/i },
   // 폭력 (특정 인물·집단 위해)
   { category: "violence", regex: /(죽여(라|버려)|살해|폭행해|때려죽|총\s*쏴)/i },
   // 의료 단정 (위험할 수 있는 진단·복용 지시)
@@ -36,6 +36,20 @@ const SAFE_FALLBACK = {
   political: "오늘은 의견 차이보다 공통점을 먼저 보는 날.",
   religion: "오늘은 다른 가치관을 가진 사람과 거리를 두는 것이 평온의 길.",
 } as const;
+
+// 입력 금칙어(욕설·비속어) — 닉네임·친구이름이 OG 공유카드에 박제되는 것 방지.
+// 공백·반복 변형을 흡수하기 위해 정규화 후 매칭.
+const PROFANITY =
+  /(씨발|시발|씨팔|시팔|쌍놈|개새|개색|새끼|병신|븅신|좆|좇|지랄|닥쳐|꺼져|니애미|애미|창녀|보지|자지|걸레|fuck|shit|bitch|asshole|dick)/i;
+
+export function sanitizeName(name: string | undefined | null): string {
+  if (!name) return "";
+  const trimmed = name.trim().slice(0, 12);
+  // 공백·특수문자 제거한 정규화 문자열로 우회(예: "병 신") 매칭
+  const normalized = trimmed.replace(/[\s._\-*]/g, "");
+  if (PROFANITY.test(trimmed) || PROFANITY.test(normalized)) return "";
+  return trimmed;
+}
 
 export function checkOutput(text: string): GuardrailResult {
   const hits: GuardrailHit[] = [];

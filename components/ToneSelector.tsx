@@ -12,10 +12,10 @@ type ToneSpec = {
 
 const TONES: ToneSpec[] = [
   { id: "warm", label: "다정", locked: false, hint: "친근한 친구 톤", gradient: "linear-gradient(135deg, #ffb3d1, #c4a3ff)" },
-  { id: "cynical", label: "시니컬", locked: true, hint: "Co-Star 정수", gradient: "linear-gradient(135deg, #6ee7ff, #c4a3ff)" },
-  { id: "darkComedy", label: "블랙코미디", locked: true, hint: "자기풍자", gradient: "linear-gradient(135deg, #2a2342, #ff7a8a)" },
-  { id: "tsundere", label: "츤데레", locked: true, hint: "캐릭터 톤", gradient: "linear-gradient(135deg, #ffb3d1, #ff7a8a)" },
-  { id: "traditional", label: "진중", locked: true, hint: "전통 사주", gradient: "linear-gradient(135deg, #ffd66b, #ff7a8a)" },
+  { id: "cynical", label: "시니컬", locked: false, hint: "Co-Star 정수", gradient: "linear-gradient(135deg, #6ee7ff, #c4a3ff)" },
+  { id: "darkComedy", label: "블랙코미디", locked: false, hint: "자기풍자", gradient: "linear-gradient(135deg, #2a2342, #ff7a8a)" },
+  { id: "tsundere", label: "츤데레", locked: false, hint: "캐릭터 톤", gradient: "linear-gradient(135deg, #ffb3d1, #ff7a8a)" },
+  { id: "traditional", label: "진중", locked: false, hint: "전통 사주", gradient: "linear-gradient(135deg, #ffd66b, #ff7a8a)" },
 ];
 
 export default function ToneSelector({

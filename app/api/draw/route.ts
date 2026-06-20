@@ -87,7 +87,11 @@ export async function POST(req: NextRequest) {
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    return NextResponse.json({ error: `Draw failed: ${msg}` }, { status: 500 });
+    console.error("[draw] error:", msg);
+    return NextResponse.json(
+      { error: "운세를 불러오지 못했어요. 잠시 후 다시 시도해 주세요." },
+      { status: 500 },
+    );
   }
 }
 

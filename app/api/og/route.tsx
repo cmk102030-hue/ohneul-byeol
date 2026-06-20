@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { CARDS, getCardById } from "@/lib/cards";
+import { sanitizeName } from "@/lib/guardrail";
 
 export const runtime = "edge";
 
@@ -54,7 +55,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const cardId = searchParams.get("card") ?? CARDS[0].id;
   const date = searchParams.get("date") ?? new Date().toISOString().slice(0, 10);
-  const nickname = searchParams.get("nickname") ?? "";
+  const nickname = sanitizeName(searchParams.get("nickname"));
   const tone = searchParams.get("tone") ?? "warm";
   const zodiac = searchParams.get("zodiac") ?? "";
   const mbti = searchParams.get("mbti") ?? "";

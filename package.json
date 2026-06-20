@@ -1,0 +1,28 @@
+{
+  "name": "horoscope-kr",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 7803",
+    "build": "next build",
+    "start": "next start -p 7803",
+    "test:chart": "curl -s -X POST http://127.0.0.1:7803/api/chart -H 'Content-Type: application/json' -d '{\"birthDate\":\"1996-05-28\",\"birthTime\":\"12:00\",\"timezone\":\"Asia/Seoul\",\"mbti\":\"INFP\"}' | node -e 'let d=\"\";process.stdin.on(\"data\",c=>d+=c).on(\"end\",()=>console.log(JSON.stringify(JSON.parse(d),null,2)))'"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.96.0",
+    "@vercel/analytics": "^2.0.1",
+    "lunar-javascript": "1.6.13",
+    "next": "14.2.18",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.16.13",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.4.47",
+    "tailwindcss": "3.4.14",
+    "typescript": "5.6.3"
+  }
+}

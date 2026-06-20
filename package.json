@@ -6,7 +6,7 @@
     "dev": "next dev -p 7803",
     "build": "next build",
     "start": "next start -p 7803",
-    "test:chart": "curl -s -X POST http://127.0.0.1:7803/api/chart -H 'Content-Type: application/json' -d '{\"birthDate\":\"1996-05-28\",\"birthTime\":\"12:00\",\"timezone\":\"Asia/Seoul\",\"mbti\":\"INFP\"}' | node -e 'let d=\"\";process.stdin.on(\"data\",c=>d+=c).on(\"end\",()=>console.log(JSON.stringify(JSON.parse(d),null,2)))'"
+    "test:saju": "node test_saju.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",

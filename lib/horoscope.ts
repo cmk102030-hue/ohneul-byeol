@@ -4,7 +4,11 @@ import { checkOutput, type GuardrailHit } from "./guardrail";
 import { cached, cacheKey } from "./llm-cache";
 
 export type ChartSummary = {
-  astrology: { korean: string; element: string; rulingPlanet: string; keywords: string[] };
+  astrology: {
+    sun: { korean: string; element: string; rulingPlanet: string; keywords: string[] };
+    moon: { korean: string; element: string } | null; // 출생시각 미상이어도 산출(시각 둔감)
+    rising: { korean: string } | null; // 출생시각 미상 시 null
+  };
   saju: { korean: string; ilgan: string; zodiacAnimal: string };
   mbti: { code: string; korean: string; keywords: string[] } | null;
 };
@@ -57,13 +61,15 @@ function buildUserPrompt(input: HoroscopeInput): string {
     ? `[오늘 뽑힌 카드] #${c.number} ${c.name} (${c.english}) — 키워드: ${c.keywords.join(", ")} / 빛: ${c.light} / 그림자: ${c.shadow}
 [카드 미션] ${c.mission}`
     : "[오늘 뽑힌 카드] 없음";
+  const moonBlock = a.moon ? ` · 달자리 ${a.moon.korean}(원소 ${a.moon.element})` : "";
+  const risingBlock = a.rising ? ` · 상승궁 ${a.rising.korean}` : "";
   return `[운세 대상 날짜] ${input.date}
 ${cardBlock}
-[별자리] ${a.korean} (원소: ${a.element}, 지배성: ${a.rulingPlanet}, 키워드: ${a.keywords.join(", ")})
+[별자리 3중] 태양 ${a.sun.korean}(원소: ${a.sun.element}, 지배성: ${a.sun.rulingPlanet}, 키워드: ${a.sun.keywords.join(", ")})${moonBlock}${risingBlock}
 [사주] ${s.korean} / 일간 ${s.ilgan} / 띠 ${s.zodiacAnimal}
 [MBTI] ${m ? `${m.code} (${m.korean}, ${m.keywords.join(", ")})` : "미입력"}
 
-위 입력을 융합해 오늘의 운세를 작성하라. **오늘 뽑힌 카드의 의미를 반드시 운세에 녹여라.** 별자리·사주·MBTI는 카드 해석을 뒷받침하는 근거로 활용. 50~80자, 1~2문장, 따옴표·줄바꿈 없이.`;
+위 입력을 융합해 오늘의 운세를 작성하라. **오늘 뽑힌 카드의 의미를 반드시 운세에 녹여라.** 태양·달·상승궁 별자리(겉모습 태양·내면 달·인상 상승궁)·사주·MBTI는 카드 해석을 뒷받침하는 근거로 활용. 50~80자, 1~2문장, 따옴표·줄바꿈 없이.`;
 }
 
 export async function generateHoroscope(input: HoroscopeInput, tone: Tone): Promise<HoroscopeResult> {
@@ -71,7 +77,7 @@ export async function generateHoroscope(input: HoroscopeInput, tone: Tone): Prom
 
   // Mock fallback (키 없거나 placeholder)
   if (!apiKey || apiKey.trim() === "" || apiKey.startsWith("MOCK")) {
-    const a = input.astrology.korean;
+    const a = input.astrology.sun.korean;
     const mbti = input.mbti?.code ?? "—";
     const cardLabel = input.card ? `#${input.card.number} ${input.card.name}` : "—";
     const mockText = `[MOCK·${a}·${mbti}·${cardLabel}] ${MOCK_TEXTS[tone]}`;
@@ -94,8 +100,9 @@ export async function generateHoroscope(input: HoroscopeInput, tone: Tone): Prom
   // 같은 (날짜+사주+별자리+MBTI+톤+카드) = 같은 운세 → 30h 캐시(하루 단위 + 여유).
   // 같은 입력 LLM 재호출을 막아 비용 폭탄 방어 (P0).
   const key = cacheKey([
-    "horo", input.date, input.astrology.korean, input.saju.korean,
-    input.saju.ilgan, input.mbti?.code, tone, input.card?.number,
+    "horo", input.date,
+    input.astrology.sun.korean, input.astrology.moon?.korean, input.astrology.rising?.korean,
+    input.saju.korean, input.saju.ilgan, input.mbti?.code, tone, input.card?.number,
   ]);
   const { value, hit } = await cached<HoroscopeResult>(key, 60 * 60 * 30, async () => {
     const client = new Anthropic({ apiKey });

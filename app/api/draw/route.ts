@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getZodiac } from "@/lib/astrology";
+import { getAstrology } from "@/lib/astrology";
 import { getBaZi } from "@/lib/saju";
 import { getMBTI } from "@/lib/mbti";
 import { generateHoroscope } from "@/lib/horoscope";
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   const targetDate = date ?? todayKST();
 
   try {
-    const astrology = getZodiac(birthDate);
+    const astro = getAstrology(birthDate, birthTime); // 태양·달·상승궁 3중
     const saju = getBaZi(birthDate, birthTime);
     const mbtiInfo = getMBTI(mbti);
 
@@ -56,7 +56,11 @@ export async function POST(req: NextRequest) {
     const horoscope = await generateHoroscope(
       {
         date: targetDate,
-        astrology,
+        astrology: {
+          sun: { korean: astro.sun.korean, element: astro.sun.element, rulingPlanet: astro.sun.rulingPlanet, keywords: astro.sun.keywords },
+          moon: astro.moon ? { korean: astro.moon.korean, element: astro.moon.element } : null,
+          rising: astro.rising ? { korean: astro.rising.korean } : null,
+        },
         saju,
         mbti: mbtiInfo,
         card: {
@@ -81,7 +85,8 @@ export async function POST(req: NextRequest) {
         date: targetDate,
       },
       card,
-      chart: { astrology, saju, mbti: mbtiInfo },
+      // astrology = 태양(하위호환: korean·symbol) · moon/rising = 추가 노출(향후 UI)
+      chart: { astrology: astro.sun, moon: astro.moon, rising: astro.rising, saju, mbti: mbtiInfo },
       horoscope,
       generatedAt: new Date().toISOString(),
     });

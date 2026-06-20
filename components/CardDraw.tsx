@@ -132,7 +132,7 @@ export default function CardDraw({
                     </div>
                     <div className="flex items-center justify-between text-[9px] uppercase tracking-[0.2em] font-bold text-white/60">
                       <span>{TONE_LABEL[tone]}</span>
-                      <span>@TBD</span>
+                      <span>★ 오늘의 별</span>
                     </div>
                   </div>
                 </div>

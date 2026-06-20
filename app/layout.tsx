@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
-  title: "horoscope-kr (TBD)",
-  description: "AI 별점 한국형 — 점성 + 사주 + MBTI 융합",
+  title: "오늘의 별 — 오늘의 운세·친구 궁합",
+  description: "점성·사주·MBTI를 융합한 AI 운세와 친구 궁합. 오늘의 별에서 매일 한 줄.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

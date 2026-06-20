@@ -204,7 +204,7 @@ export default function Home() {
       <header className="relative z-10 w-full max-w-md flex items-center justify-between mb-5 pt-1">
         <div>
           <h1 className="text-[22px] font-black tracking-tight gradient-text-accent leading-tight">오늘의 별</h1>
-          <p className="text-[10px] text-white/35 mt-0.5 tracking-wider uppercase">코드명 TBD · 카드 v0.6</p>
+          <p className="text-[10px] text-white/35 mt-0.5 tracking-wider uppercase">AI 별점 · 운세 · 궁합</p>
         </div>
         <div className="flex items-center gap-1.5">
           <button

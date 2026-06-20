@@ -106,7 +106,7 @@ export default function HoroscopeCard({
       {/* Footer */}
       <div className="relative z-10 flex items-center justify-between text-[10px] tracking-[0.16em] uppercase">
         <span className="text-white/40 font-bold">{TONE_LABEL[tone]}</span>
-        <span className="text-accent/60 font-bold">@TBD</span>
+        <span className="text-accent/60 font-bold">★ 오늘의 별</span>
       </div>
     </div>
   );

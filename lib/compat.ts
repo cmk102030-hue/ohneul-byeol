@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { TONE_PROMPTS, type Tone } from "./tones";
 import { checkOutput, type GuardrailHit } from "./guardrail";
+import { cached, cacheKey } from "./llm-cache";
 import type { ZodiacInfo } from "./astrology";
 import type { MBTIInfo } from "./mbti";
 
@@ -125,27 +126,36 @@ export async function generateCompat(me: CompatPerson, friend: CompatPerson, ton
     };
   }
 
-  const client = new Anthropic({ apiKey });
-  const tonePrompt = TONE_PROMPTS[tone];
-  const res = await client.messages.create({
-    model: MODEL,
-    max_tokens: 500,
-    system: [{ type: "text", text: tonePrompt.system, cache_control: { type: "ephemeral" } }],
-    messages: [{ role: "user", content: buildCompatPrompt(me, friend, score, breakdown) }],
+  // 두 사람(순서 무관) + 톤 = 같은 궁합 → 7일 캐시. 키는 대칭 정렬(me/friend 순서 불변).
+  const pa = `${me.name}:${me.zodiac.korean}:${me.ilgan}:${me.mbti?.code ?? ""}`;
+  const pb = `${friend.name}:${friend.zodiac.korean}:${friend.ilgan}:${friend.mbti?.code ?? ""}`;
+  const [x, y] = [pa, pb].sort();
+  const key = cacheKey(["compat", x, y, tone]);
+
+  const { value } = await cached<CompatResult>(key, 60 * 60 * 24 * 7, async () => {
+    const client = new Anthropic({ apiKey });
+    const tonePrompt = TONE_PROMPTS[tone];
+    const res = await client.messages.create({
+      model: MODEL,
+      max_tokens: 500,
+      system: [{ type: "text", text: tonePrompt.system, cache_control: { type: "ephemeral" } }],
+      messages: [{ role: "user", content: buildCompatPrompt(me, friend, score, breakdown) }],
+    });
+
+    const rawText = res.content
+      .filter((b): b is Anthropic.TextBlock => b.type === "text")
+      .map((b) => b.text)
+      .join("")
+      .trim();
+
+    const g = checkOutput(rawText);
+    return {
+      score, level, breakdown,
+      text: g.triggered ? g.safeText! : rawText,
+      tone, model: res.model, mock: false,
+      guardrail: { triggered: g.triggered, hits: g.hits },
+      generatedAt: new Date().toISOString(),
+    };
   });
-
-  const rawText = res.content
-    .filter((b): b is Anthropic.TextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("")
-    .trim();
-
-  const g = checkOutput(rawText);
-  return {
-    score, level, breakdown,
-    text: g.triggered ? g.safeText! : rawText,
-    tone, model: res.model, mock: false,
-    guardrail: { triggered: g.triggered, hits: g.hits },
-    generatedAt: new Date().toISOString(),
-  };
+  return value;
 }

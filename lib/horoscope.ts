@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { TONE_PROMPTS, type Tone } from "./tones";
 import { checkOutput, type GuardrailHit } from "./guardrail";
+import { cached, cacheKey } from "./llm-cache";
 
 export type ChartSummary = {
   astrology: { korean: string; element: string; rulingPlanet: string; keywords: string[] };
@@ -90,43 +91,52 @@ export async function generateHoroscope(input: HoroscopeInput, tone: Tone): Prom
     };
   }
 
-  const client = new Anthropic({ apiKey });
-  const tonePrompt = TONE_PROMPTS[tone];
-  const userPrompt = buildUserPrompt(input);
+  // 같은 (날짜+사주+별자리+MBTI+톤+카드) = 같은 운세 → 30h 캐시(하루 단위 + 여유).
+  // 같은 입력 LLM 재호출을 막아 비용 폭탄 방어 (P0).
+  const key = cacheKey([
+    "horo", input.date, input.astrology.korean, input.saju.korean,
+    input.saju.ilgan, input.mbti?.code, tone, input.card?.number,
+  ]);
+  const { value, hit } = await cached<HoroscopeResult>(key, 60 * 60 * 30, async () => {
+    const client = new Anthropic({ apiKey });
+    const tonePrompt = TONE_PROMPTS[tone];
+    const userPrompt = buildUserPrompt(input);
 
-  const res = await client.messages.create({
-    model: MODEL,
-    max_tokens: 400,
-    system: [
-      { type: "text", text: tonePrompt.system, cache_control: { type: "ephemeral" } },
-    ],
-    messages: [{ role: "user", content: userPrompt }],
+    const res = await client.messages.create({
+      model: MODEL,
+      max_tokens: 400,
+      system: [
+        { type: "text", text: tonePrompt.system, cache_control: { type: "ephemeral" } },
+      ],
+      messages: [{ role: "user", content: userPrompt }],
+    });
+
+    const rawText = res.content
+      .filter((b): b is Anthropic.TextBlock => b.type === "text")
+      .map((b) => b.text)
+      .join("")
+      .trim();
+
+    const guard = checkOutput(rawText);
+    const finalText = guard.triggered ? guard.safeText! : rawText;
+
+    const usage = res.usage;
+    const cacheRead = usage.cache_read_input_tokens ?? 0;
+    const cacheCreate = usage.cache_creation_input_tokens ?? 0;
+
+    return {
+      tone,
+      text: finalText,
+      model: res.model,
+      cached: cacheRead > 0,
+      inputTokens: usage.input_tokens,
+      outputTokens: usage.output_tokens,
+      cacheReadTokens: cacheRead,
+      cacheCreationTokens: cacheCreate,
+      mock: false,
+      guardrail: { triggered: guard.triggered, hits: guard.hits },
+      generatedAt: new Date().toISOString(),
+    };
   });
-
-  const rawText = res.content
-    .filter((b): b is Anthropic.TextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("")
-    .trim();
-
-  const guard = checkOutput(rawText);
-  const finalText = guard.triggered ? guard.safeText! : rawText;
-
-  const usage = res.usage;
-  const cacheRead = usage.cache_read_input_tokens ?? 0;
-  const cacheCreate = usage.cache_creation_input_tokens ?? 0;
-
-  return {
-    tone,
-    text: finalText,
-    model: res.model,
-    cached: cacheRead > 0,
-    inputTokens: usage.input_tokens,
-    outputTokens: usage.output_tokens,
-    cacheReadTokens: cacheRead,
-    cacheCreationTokens: cacheCreate,
-    mock: false,
-    guardrail: { triggered: guard.triggered, hits: guard.hits },
-    generatedAt: new Date().toISOString(),
-  };
+  return hit ? { ...value, cached: true } : value;
 }

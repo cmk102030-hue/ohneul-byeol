@@ -4,6 +4,7 @@ import { getBaZi } from "@/lib/saju";
 import { getMBTI } from "@/lib/mbti";
 import { generateCompat, type CompatPerson } from "@/lib/compat";
 import { VALID_TONES, type Tone } from "@/lib/tones";
+import { guardRequest } from "@/lib/edge-guard";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -33,6 +34,9 @@ function buildPerson(p: PersonReq, fallbackName: string): CompatPerson {
 }
 
 export async function POST(req: NextRequest) {
+  const blocked = await guardRequest(req, "compat", { perMin: 8, perDay: 100 });
+  if (blocked) return blocked;
+
   let body: Req;
   try {
     body = (await req.json()) as Req;

@@ -14,7 +14,7 @@
     "@vercel/analytics": "^2.0.1",
     "astronomy-engine": "^2.1.19",
     "lunar-javascript": "1.6.13",
-    "next": "14.2.18",
+    "next": "^14.2.35",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

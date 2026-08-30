@@ -201,6 +201,7 @@ const tocPage = toc.length < 4 ? "" : `
 </dl>
 </section>`;
 
+
 const html = `<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><title>사주 명식 정밀 분석 — ${slug}</title>
 <style>
@@ -366,7 +367,7 @@ let paged = execFileSync(CHROME, [
 ], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] });
 paged = paged.replace(/<script[\s\S]*?<\/script>/g, "");   // 스크립트 제거
 const pgm = paged.match(/data-paginated="(\d+)"/);
-fs.unlinkSync(draft);
+if (!process.env.KEEP_DRAFT) fs.unlinkSync(draft);
 fs.writeFileSync(path.join(dir, "report.html"), paged);
 console.log(`✅ ${dir}/report.html` + (pgm ? `  (페이지 ${pgm[1]}개로 조판)` : "  ⚠️ 페이지네이션 미적용"));
 

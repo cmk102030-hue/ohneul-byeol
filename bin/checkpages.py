@@ -29,7 +29,7 @@ def info(p):
 
 rows = [info(p) for p in pages]
 full = sorted(w for _, w, _ in rows)[int(len(rows) * 0.8)]   # 상위 20% 경계 = '꽉 참'
-is_chap = ['class="brk chap"' in p for p in pages]
+is_chap = ['brk chap' in p for p in pages]  # class="brk chap tight" 등 추가 클래스 허용
 is_end = [(i + 1 < len(pages) and is_chap[i + 1]) or i == len(pages) - 1 for i in range(len(pages))]
 
 print("파일 %s\n본문 %d 페이지 · 기준(꽉 참) %d · 하한 %d%%\n" % (path, len(pages), full, MIN_RATIO * 100))

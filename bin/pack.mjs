@@ -24,7 +24,7 @@ const inlineRaw = (s) =>
     .replace(/\[근거:\s*([^\]]+)\]/g, '<span class="src">근거 · $1</span>');
 
 // 본문 = 라벨 제거(어미가 확신도를 말한다) / 표 = inlineRaw로 배지 유지
-const inline = (s) => inlineRaw(s.replace(/\s*\*{0,2}\[(확정|높음|중간|낮음)\]\*{0,2}/g, ""));
+const inline = (s) => inlineRaw(s.replace(/\s*\*{0,2}(?<!`)\[(확정|높음|중간|낮음)\](?!`)\*{0,2}/g, ""));
 
 function render(src) {
   const out = [];

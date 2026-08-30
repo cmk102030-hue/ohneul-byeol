@@ -122,7 +122,7 @@ const coverPage = `
 <section class="cover">
   <div class="crest">命</div>
   <h1 class="ctitle">사주 명식 정밀 분석</h1>
-  <p class="csub">${b.lunar.year}년생 · ${b.zodiacAnimal}띠 · ${m.gender === "M" ? "남명" : "여명"}</p>
+  <p class="csub"><b>${slug}</b> 님 · ${b.lunar.year}년생 ${b.zodiacAnimal}띠 · ${m.gender === "M" ? "남명" : "여명"}</p>
   <p class="cissue">발급 ${new Date().toISOString().slice(0,10)}</p>
   <div class="cbazi" style="--n:${coverCols.length}">
     <div class="crow">${coverCols.map((p) => `<span class="el-${EL[p.ganElement] ?? "x"}">${p.gan}</span>`).join("")}</div>
@@ -284,6 +284,10 @@ dl.basis dd { color:var(--ink2); }
 /* 측정 기반 페이지네이션 — paginate.js가 .page 단위로 재조립한다 */
 .body[data-paginated] { padding:0; }
 .body[data-paginated] .page { height:794px; padding:56px 58px 62px; page-break-after:always; break-after:page; overflow:hidden; }
+.body[data-paginated] .page { position:relative; }
+.pgnum { position:absolute; bottom:24px; left:0; right:0; text-align:center; font-style:normal; font-size:9.5px; letter-spacing:1.2px; color:#b8ad99; }
+.toc ol li { position:relative; }
+.tpg { position:absolute; right:0; font-weight:400; font-size:12.5px; color:#9b917f; }
 .body[data-paginated] .page:last-child { page-break-after:auto; }
 .body[data-paginated] .page > h2.chap { page-break-before:auto; break-before:auto; }
 

@@ -142,5 +142,23 @@
   for (const pg of pages.slice()) {
     if (!pg.children.length) { pg.remove(); pages.splice(pages.indexOf(pg), 1); }
   }
+  // 쪽번호 + 차례 쪽수 — 본문 기준(표지·차례 제외), 책 관례
+  const chapPage = {};
+  pages.forEach((pg, i) => {
+    const num = document.createElement("i");
+    num.className = "pgnum"; num.textContent = i + 1;
+    pg.appendChild(num);
+    const h = pg.querySelector("h2.chap > i");
+    if (h) { const k = h.textContent.trim(); if (!(k in chapPage)) chapPage[k] = i + 1; }
+  });
+  document.querySelectorAll(".toc ol li").forEach((li) => {
+    const k = li.querySelector("i")?.textContent?.trim();
+    if (k in chapPage) {
+      const b = document.createElement("b");
+      b.className = "tpg"; b.textContent = chapPage[k];
+      li.appendChild(b);
+    }
+  });
+
   body.setAttribute("data-paginated", String(pages.length));
 })();

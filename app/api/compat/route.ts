@@ -23,7 +23,9 @@ function validPerson(p: unknown): p is PersonReq {
 
 function buildPerson(p: PersonReq, fallbackName: string): CompatPerson {
   const zodiac = getZodiac(p.birthDate);
-  const saju = getBaZi(p.birthDate, p.birthTime && /^\d{2}:\d{2}$/.test(p.birthTime) ? p.birthTime : "12:00");
+  // 시각 미상을 12:00으로 지어내지 않는다 — timeUnknown으로 넘겨 시주를 비운다.
+  const hasTime = !!p.birthTime && /^\d{2}:\d{2}$/.test(p.birthTime);
+  const saju = getBaZi(p.birthDate, hasTime ? p.birthTime! : "", { timeUnknown: !hasTime });
   const mbti = getMBTI(p.mbti);
   return {
     name: sanitizeName(p.name) || fallbackName,

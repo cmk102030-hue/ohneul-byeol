@@ -61,13 +61,18 @@
         cur.removeChild(rest);
         if (!parts) {
           if (used > 0) {
-            // R5 — 표 앞 도입 문단이 홀로 남지 않게 함께 옮긴다
-            let lead = null;
-            if (leadCand && leadCand.parentNode === cur && leadCand.tagName === "P" && leadCand.offsetHeight < 150) {
-              lead = leadCand; cur.removeChild(lead);
+            // R5 — 표 앞 도입부(문단·절 제목)가 홀로 남지 않게 함께 옮긴다
+            const carry = [];
+            for (let k = 0; k < 2; k++) {
+              const t = cur.lastElementChild;
+              if (!t) break;
+              const isKeep = t.classList && t.classList.contains("keep");
+              if (t.tagName === "P" && t.offsetHeight < 220 && carry.length === 0) { carry.unshift(t); cur.removeChild(t); }
+              else if ((t.tagName === "H3" || isKeep) && t.offsetHeight < 330) { carry.unshift(t); cur.removeChild(t); break; }
+              else break;
             }
             newPage();
-            if (lead) { cur.appendChild(lead); used += lead.offsetHeight + mb(lead); }
+            for (const t of carry) { cur.appendChild(t); used += t.offsetHeight + mb(t); }
           }
           cur.appendChild(rest); used += rest.offsetHeight + mb(rest); return;
         }

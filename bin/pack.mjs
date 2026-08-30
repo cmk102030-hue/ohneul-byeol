@@ -123,6 +123,7 @@ const coverPage = `
   <div class="crest">命</div>
   <h1 class="ctitle">사주 명식 정밀 분석</h1>
   <p class="csub">${b.lunar.year}년생 · ${b.zodiacAnimal}띠 · ${m.gender === "M" ? "남명" : "여명"}</p>
+  <p class="cissue">발급 ${new Date().toISOString().slice(0,10)}</p>
   <div class="cbazi" style="--n:${coverCols.length}">
     <div class="crow">${coverCols.map((p) => `<span class="el-${EL[p.ganElement] ?? "x"}">${p.gan}</span>`).join("")}</div>
     <div class="crow">${coverCols.map((p) => `<span class="el-${EL[p.zhiElement] ?? "x"}">${p.zhi}</span>`).join("")}</div>
@@ -219,7 +220,8 @@ section, .body { padding: 56px 58px 62px; }
 .el-bg-geum{background:var(--geum)} .el-bg-su{background:var(--su)}
 
 /* 표지 */
-.cover { height:792px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding-bottom:70px; text-align:center; }
+.cover .cissue { position:absolute; bottom:44px; left:0; right:0; font-size:10.5px; letter-spacing:1.5px; color:var(--ink3,#9b917f); }
+.cover { position:relative; height:792px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding-bottom:70px; text-align:center; }
 .crest { font:400 52px/1 "AppleMyungjo",serif; color:var(--gold); border:1px solid var(--gold); width:94px; height:94px; display:flex; align-items:center; justify-content:center; margin-bottom:44px; }
 .ctitle { font:400 31px/1.4 "AppleMyungjo",serif; letter-spacing:-.3px; }
 .csub { margin-top:12px; color:var(--ink2); font-size:14px; letter-spacing:.2px; }

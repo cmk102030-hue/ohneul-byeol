@@ -13,8 +13,10 @@ s = io.open(sys.argv[1], encoding="utf-8").read()
 who = sys.argv[1].split("/")[-2]
 
 try:
-    seg = s[s.index("## ★ 검증 구간"):]
-    seg = seg[:re.search(r"\n## \d", seg).start()]
+    anchor = "## ★ 검증 구간" if "## ★ 검증 구간" in s else "## 문항"
+    seg = s[s.index(anchor):]
+    m_end = re.search(r"\n## \d", seg)
+    if m_end: seg = seg[:m_end.start()]
 except ValueError:
     print("검증 구간 없음"); sys.exit(1)
 

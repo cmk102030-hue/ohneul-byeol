@@ -94,7 +94,8 @@ function render(src) {
       continue;
     }
     closeList();
-    out.push(`<p>${inline(ln)}</p>`);
+    const hi = /\*{0,2}(?<!`)\[(확정|높음)\](?!`)\*{0,2}/.test(ln);   // 확신도 높은 문단 = 시각 강조
+    out.push(`<p${hi ? ' class="hi"' : ""}>${inline(ln)}</p>`);
     closeKeep();
     i++;
   }
@@ -295,6 +296,7 @@ dl.basis dd { color:var(--ink2); }
 /* 페이지 나눔 제어 (1차 렌더용 폴백) */
 .body h3 { page-break-after:avoid; break-after:avoid; }
 .keep { break-inside:avoid; page-break-inside:avoid; }
+.body p.hi { border-left:2px solid var(--gold); padding-left:15px; margin-left:-17px; }
 /* 여백 되돌림 — 장의 마지막 페이지가 얇으면 그 장만 촘촘하게 재배치한다(규약 §5) */
 .tight { line-height:1.82; }
 .tight.body p, .body .tight { margin-bottom:11px; }

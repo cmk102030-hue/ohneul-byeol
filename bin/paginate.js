@@ -148,8 +148,10 @@
     const pg = pages[k];
     let last = pg.lastElementChild;
     while (last && last.classList && last.classList.contains("pgnum")) last = last.previousElementSibling;
-    // keep 래퍼 안에 제목만 남은 경우도 고아다
-    const isOrphan = last && (last.tagName === "H3" ||
+    // 고아 = 절 제목, keep 안의 제목, 그리고 짧은 도입 문단("약점 둘." 같은 것)
+    const shortLead = last && last.tagName === "P" &&
+      (last.textContent || "").trim().length < 42;
+    const isOrphan = last && (last.tagName === "H3" || shortLead ||
       (last.classList && last.classList.contains("keep") &&
        last.children.length === 1 && last.firstElementChild.tagName === "H3"));
     if (isOrphan) {

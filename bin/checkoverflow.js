@@ -26,7 +26,8 @@
 
     const isH3 = last.tagName === "H3" ||
       (last.classList.contains("keep") && last.children.length === 1 &&
-       last.firstElementChild && last.firstElementChild.tagName === "H3");
+       last.firstElementChild && last.firstElementChild.tagName === "H3") ||
+      (last.tagName === "P" && (last.textContent || "").trim().length < 42);
     if (isH3) orphan.push(i + 1);
   }
   document.title = `PAGES=${P.length}|OVER=${over.join(",")}|TOP=${top.join(",")}|ORPHAN=${orphan.join(",")}`;

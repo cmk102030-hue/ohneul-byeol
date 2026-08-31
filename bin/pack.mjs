@@ -317,9 +317,12 @@ dl.guide dd { color:var(--ink2); }
 .body ul, .body ol { margin:0 0 18px 22px; } .body li { margin-bottom:9px; padding-left:4px; }
 .body ul li::marker { color:var(--gold); }
 .body ol li::marker { color:var(--gold); font-weight:600; }
-.body table { width:100%; table-layout:fixed; border-collapse:collapse; margin:16px 0 22px; font-size:12.5px; line-height:1.65; word-break:keep-all; }
-.body th, .body td { border:1px solid var(--line); padding:9px 11px; text-align:left; vertical-align:top; }
-.body th { background:var(--gold-bg); font-weight:600; }
+.body table { width:100%; table-layout:fixed; border-collapse:collapse; margin:14px 0 20px; font-size:12.5px; line-height:1.7; word-break:keep-all; }
+.body th, .body td { padding:8px 12px; text-align:left; vertical-align:top; border:0; border-bottom:1px solid var(--line); }
+.body th { background:none; font-weight:600; font-size:11px; letter-spacing:.6px; color:var(--ink3); border-bottom:1px solid var(--ink2); padding-bottom:6px; }
+.body tbody tr:last-child td { border-bottom:1px solid var(--ink2); }
+.body td:first-child { color:var(--ink); font-weight:600; }
+.body td b, .body th b { font-weight:600; }
 .body tbody tr:nth-child(even) td { background:#faf7f1; }
 .body b { font-weight:700; color:#14100c; }
 .body hr { border:0; border-top:1px solid var(--line); margin:30px 0; }

@@ -143,6 +143,48 @@
     }
   }
 
+  // R9 — 장 마지막 자투리 쪽: 앞 쪽에 자리가 있으면 끌어올린다(빈 쪽 방지)
+  // 마진 겹침(collapse) 때문에 단순 합산은 과대평가된다 — 실제 렌더 높이로 잰다
+  const fill = (pg) => {
+    const kids = [...pg.children].filter((c) => !(c.classList && c.classList.contains("pgnum")));
+    if (!kids.length) return 0;
+    const padTop = parseFloat(getComputedStyle(pg).paddingTop) || 0;   // 활자면 시작점 기준
+    const top = pg.getBoundingClientRect().top + padTop;
+    return Math.round(kids[kids.length - 1].getBoundingClientRect().bottom - top);
+  };
+  const bodyOf = (pg) => [...pg.children].filter((c) => !(c.classList && c.classList.contains("pgnum")));
+  for (let k = pages.length - 1; k > 0; k--) {
+    const pg = pages[k], prev = pages[k - 1];
+    if (pg.querySelector("h2.chap")) continue;   // 장은 새 쪽에서 연다
+
+    // ① 앞 쪽에 자리가 남으면 끌어올린다
+    let guard = 0;
+    while (bodyOf(pg).length && guard++ < 20) {
+      const first = pg.firstElementChild;
+      if (!first || (first.classList && first.classList.contains("pgnum"))) break;
+      const need = first.offsetHeight + mb(first);
+      if (fill(prev) + need > PAGE_H) break;
+      prev.appendChild(first);
+    }
+
+    // ② 그래도 자투리(활자면 절반 미만)면, 앞 쪽 꼬리를 내주고 통째로 합친다
+    const rest = bodyOf(pg);
+    if (rest.length && rest.length <= 3 && fill(pg) < PAGE_H * 0.5) {
+      let g2 = 0;
+      while (fill(prev) + fill(pg) > PAGE_H && g2++ < 8) {
+        const tail = bodyOf(prev).pop();
+        if (!tail || bodyOf(prev).length <= 1) break;
+        pg.insertBefore(tail, pg.firstChild);
+      }
+      if (fill(prev) + fill(pg) <= PAGE_H) {
+        for (const el of bodyOf(pg)) prev.appendChild(el);
+      }
+    }
+  }
+  for (const pg of pages.slice()) {
+    if (!pg.children.length) { pg.remove(); pages.splice(pages.indexOf(pg), 1); }
+  }
+
   // R8 — 절 제목이 페이지 끝에 홀로 남으면 다음 쪽으로 내린다(고아 제목)
   for (let k = 0; k < pages.length - 1; k++) {
     const pg = pages[k];

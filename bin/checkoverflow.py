@@ -18,11 +18,11 @@ try:
 finally:
     if os.path.exists(tmp): os.remove(tmp)
 
-m = re.search(r"<title>PAGES=(\d+)\|OVER=([^|]*)\|TOP=([^|]*)\|ORPHAN=([^<]*)</title>", out)
+m = re.search(r"<title>PAGES=(\d+)\|OVER=([^|]*)\|TOP=([^|]*)\|ORPHAN=([^|]*)\|EMPTY=([^<]*)</title>", out)
 if not m:
     print("측정 실패 — 페이지 정보를 회수하지 못했다"); sys.exit(2)
 
-pages, over, top, orphan = m.group(1), m.group(2), m.group(3), m.group(4)
+pages, over, top, orphan, empty = m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
 who = os.path.basename(d)
 print("═══ %s — %s쪽\n" % (who, pages))
 
@@ -38,6 +38,7 @@ def report(name, val, unit=""):
 report("하단 침범", over, " (쪽:높이px · 한계 754)")
 report("상단 여백", top, " (쪽:margin)")
 report("고아 제목", orphan)
+report("빈 쪽", empty, " (활자면 50%% 미만)")
 
 print("\n═══ 판정: %s" % ("PASS" if not fails else "FAIL — " + " · ".join(fails)))
 sys.exit(1 if fails else 0)

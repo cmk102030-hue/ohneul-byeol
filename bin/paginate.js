@@ -5,7 +5,7 @@
 // ⚠️ 모든 측정은 DOM에 붙인 상태에서 한다. 페이지나 블록이 문서에 없으면
 //    offsetHeight가 0이라 계산이 통째로 무효가 된다.
 (function () {
-  const PAGE_H = 676;              // 활자면 높이 = 794 - 56(상) - 62(하)
+  const PAGE_H = 716;              // 활자면 높이 = 794 - 38(상) - 40(하)
   const TIGHT_TRY = 0.30;          // 장 마지막 페이지가 이보다 얇으면 압축 재배치
   const body = document.querySelector(".body");
   if (!body) return;

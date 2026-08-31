@@ -264,16 +264,16 @@ dl.basis dd { color:var(--ink2); }
 
 /* 본문 */
 .body h1 { font:400 20px/1.4 "AppleMyungjo",serif; margin:0 0 14px; padding-bottom:9px; border-bottom:1px solid var(--ink); }
-.body h2.chap { margin:0 0 8px; padding:0 0 16px; border-bottom:1px solid var(--ink); display:flex; align-items:baseline; gap:16px; }
+.body h2.chap { margin:0 0 6px; padding:0 0 12px; border-bottom:1px solid var(--ink); display:flex; align-items:baseline; gap:16px; }
 .body h2.chap i { font:400 42px/1 "AppleMyungjo",serif; color:var(--gold); font-style:normal; min-width:50px; }
 .body h2.chap span { font:400 24px/1.35 "AppleMyungjo",serif; color:var(--ink); }
-.body h3 { font:600 15px/1.5 "Apple SD Gothic Neo",sans-serif; color:var(--ink); letter-spacing:-.2px; margin:38px 0 14px; padding-top:2px; }
+.body h3 { font:600 15px/1.5 "Apple SD Gothic Neo",sans-serif; color:var(--ink); letter-spacing:-.2px; margin:21px 0 9px; padding-top:2px; }
 .brk { page-break-before:always; }
 .body > .page:first-child > h2.chap { page-break-before:auto; break-before:auto; }
 
 /* 측정 기반 페이지네이션 — paginate.js가 .page 단위로 재조립한다 */
 .body[data-paginated] { padding:0; }
-.page { padding:56px 58px 62px; }   /* 측정 단계부터 같은 폭이어야 조판이 맞는다 */
+.page { padding:38px 52px 40px; }   /* 측정 단계부터 같은 폭이어야 조판이 맞는다 */
 .body[data-paginated] .page { height:794px; page-break-after:always; break-after:page; overflow:hidden; }
 .body[data-paginated] .page { position:relative; }
 .body[data-paginated] .page > :first-child { margin-top:0; }
@@ -313,7 +313,7 @@ dl.guide { font-size:12.5px; line-height:1.85; }
 dl.guide dt { font-weight:600; color:var(--ink); margin-top:14px; }
 dl.guide dd { color:var(--ink2); }
 .toc li i { font:400 18px/1 "AppleMyungjo",serif; color:var(--gold); font-style:normal; min-width:34px; }
-.body p { margin:0 0 15px; text-align:left; word-break:keep-all; hanging-punctuation:allow-end; }
+.body p { margin:0 0 11px; text-align:left; word-break:keep-all; hanging-punctuation:allow-end; }
 .body ul, .body ol { margin:0 0 18px 22px; } .body li { margin-bottom:9px; padding-left:4px; }
 .body ul li::marker { color:var(--gold); }
 .body ol li::marker { color:var(--gold); font-weight:600; }
@@ -323,7 +323,7 @@ dl.guide dd { color:var(--ink2); }
 .body tbody tr:nth-child(even) td { background:#faf7f1; }
 .body b { font-weight:700; color:#14100c; }
 .body hr { border:0; border-top:1px solid var(--line); margin:30px 0; }
-blockquote { margin:18px 0 22px; padding:13px 17px; background:var(--gold-bg); border-left:2px solid var(--gold); font:400 14.5px/1.75 "Apple SD Gothic Neo",sans-serif; color:var(--ink2); letter-spacing:-.2px; }
+blockquote { margin:14px 0 18px; padding:11px 15px; background:var(--gold-bg); border-left:2px solid var(--gold); font:400 14.5px/1.75 "Apple SD Gothic Neo",sans-serif; color:var(--ink2); letter-spacing:-.2px; }
 mark { background:linear-gradient(transparent 58%, #f0e2bd 58%); color:inherit; padding:0 1px; }
 mark b { font-weight:700; }
 code { font-family:ui-monospace,Menlo,monospace; font-size:12.5px; background:#f0ebe1; padding:2px 6px; }

@@ -22,6 +22,7 @@
   };
   const lineHOf = (el) => parseFloat(getComputedStyle(el).lineHeight) || 29;
 
+  body.style.padding = "0";           // 조판 중에도 최종과 같은 폭 — .page 패딩과 이중이 되면 안 된다
   const blocks = [...body.children];
   const pages = [];
   let cur = null;

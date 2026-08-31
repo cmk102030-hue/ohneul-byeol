@@ -20,7 +20,7 @@ try:
 except ValueError:
     print("검증 구간 없음"); sys.exit(1)
 
-new_form = ("### A. 사건 예측" in seg) and ("### B. 대조 문항" in seg)
+new_form = ("### A. 사건 예측" in seg) and ("### B. 대조" in seg)
 
 if new_form:
     A = re.findall(r"^\| (A\d+) \| ([^|]+) \|", seg, re.M)

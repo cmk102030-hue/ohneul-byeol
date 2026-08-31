@@ -158,7 +158,7 @@ const chartBlock = `
   </div>
 
 
-  <h3>합·충·형·파·해</h3>
+  <h3>합·충·형·파·해 <small>글자끼리 부딪치거나 손잡는 관계</small></h3>
   <p class="rel">${m.relations.length ? m.relations.map((r) => `<span><b>${r.kind}</b> ${r.chars}</span>`).join("") : "없음"}</p>
 
 </div>`;

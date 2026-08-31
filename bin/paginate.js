@@ -139,6 +139,21 @@
     }
   }
 
+  // R8 — 절 제목이 페이지 끝에 홀로 남으면 다음 쪽으로 내린다(고아 제목)
+  for (let k = 0; k < pages.length - 1; k++) {
+    const pg = pages[k];
+    let last = pg.lastElementChild;
+    while (last && last.classList && last.classList.contains("pgnum")) last = last.previousElementSibling;
+    // keep 래퍼 안에 제목만 남은 경우도 고아다
+    const isOrphan = last && (last.tagName === "H3" ||
+      (last.classList && last.classList.contains("keep") &&
+       last.children.length === 1 && last.firstElementChild.tagName === "H3"));
+    if (isOrphan) {
+      pg.removeChild(last);
+      pages[k + 1].insertBefore(last, pages[k + 1].firstChild);
+    }
+  }
+
   for (const pg of pages.slice()) {
     if (!pg.children.length) { pg.remove(); pages.splice(pages.indexOf(pg), 1); }
   }

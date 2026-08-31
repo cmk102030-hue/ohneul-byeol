@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 
-const PAGINATE = fs.readFileSync(new URL("./paginate.js", import.meta.url), "utf8");
+const PAGINATE = fs.readFileSync(new URL("./" + (process.env.PAGINATE || "paginate.js"), import.meta.url), "utf8");
 const slug = process.argv[2];
 if (!slug) { console.error("사용: pack.mjs <slug> [--no-pdf]"); process.exit(1); }
 const dir = path.join("out", slug);

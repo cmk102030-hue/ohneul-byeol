@@ -27,12 +27,23 @@
     const isH3 = last.tagName === "H3" ||
       (last.classList.contains("keep") && last.children.length === 1 &&
        last.firstElementChild && last.firstElementChild.tagName === "H3") ||
-      (last.tagName === "P" && (last.textContent || "").trim().length < 42);
+      (last.tagName === "P" && (last.textContent || "").trim().length < 42 &&
+       (() => {                                   // 다음 쪽이 절 경계로 시작하면 정상
+         const np = P[i + 1];
+         if (!np) return false;
+         const f = np.firstElementChild;
+         if (!f) return false;
+         return !(f.tagName === "H2" || f.tagName === "H3" ||
+                  (f.classList.contains("keep") && f.querySelector("h3")) ||
+                  f.tagName === "BLOCKQUOTE");
+       })());
     if (isH3) orphan.push(i + 1);
 
     // 빈 쪽 — 활자면의 절반도 못 채운 쪽(장 마지막 자투리)
     const ratio = Math.round((last.getBoundingClientRect().bottom - box - PAD_T) / (PAGE - PAD_T - PAD_B) * 100);
-    if (ratio < 50) empty.push(`${i + 1}:${ratio}%`);
+    const npg = P[i + 1];
+    const chapEnd = !npg || (npg.firstElementChild && npg.firstElementChild.tagName === "H2");
+    if (ratio < 50 && !chapEnd) empty.push(`${i + 1}:${ratio}%`);   // 장 마지막 자투리는 정상
 
     // 절 머리만 쪽 끝에 두세 줄 남은 형태(orphan)
     const kk = [...pg.children].filter((c) => !c.classList.contains("pgnum"));

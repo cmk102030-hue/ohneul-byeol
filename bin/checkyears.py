@@ -13,6 +13,11 @@ for m in re.finditer(r"(20\d\d)\s*년?\s*([가-힣]{2})\b", s):
     if w[0] in G and w[1] in Z:      # 간지처럼 보이는 것만
         if w!=k:
             bad+=1; print("  🚨 %d년 → 리포트 '%s' · 실제 '%s'" % (y,w,k))
+# "자년은 2032년" 같은 지지-단독 표기도 검사
+for m in re.finditer(r"([자축인묘진사오미신유술해])년은\s*(20\d\d)년", s):
+    z=m.group(1); y=int(m.group(2))
+    if Z[(y-1984)%12]!=z:
+        bad+=1; print("  🚨 %s년은 %d년 → 실제 %d년은 %s년" % (z,y,y,Z[(y-1984)%12]))
 print("검사 완료 — 불일치 %d건" % bad)
 
 import sys as _s; _s.exit(1 if bad else 0)

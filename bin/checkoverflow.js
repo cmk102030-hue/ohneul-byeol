@@ -7,7 +7,7 @@
   const PAGE = 794, PAD_T = 38, PAD_B = 40;
   const LIMIT = PAGE - PAD_B;                 // 콘텐츠가 넘으면 안 되는 하한
   const P = [...document.querySelectorAll(".page")];
-  const over = [], top = [], orphan = [], empty = [];
+  const over = [], top = [], orphan = [], empty = [], headOnly = [];
 
   for (let i = 0; i < P.length; i++) {
     const pg = P[i], box = pg.getBoundingClientRect().top;
@@ -33,6 +33,17 @@
     // 빈 쪽 — 활자면의 절반도 못 채운 쪽(장 마지막 자투리)
     const ratio = Math.round((last.getBoundingClientRect().bottom - box - PAD_T) / (PAGE - PAD_T - PAD_B) * 100);
     if (ratio < 50) empty.push(`${i + 1}:${ratio}%`);
+
+    // 절 머리만 쪽 끝에 두세 줄 남은 형태(orphan)
+    const kk = [...pg.children].filter((c) => !c.classList.contains("pgnum"));
+    let acc = 0, sawHead = false;
+    for (let z = kk.length - 1; z >= 0 && z >= kk.length - 3; z--) {
+      const el = kk[z];
+      const s2 = getComputedStyle(el);
+      acc += el.offsetHeight + parseFloat(s2.marginTop) + parseFloat(s2.marginBottom);
+      if (el.tagName === "H3" || (el.classList.contains("keep") && el.firstElementChild && el.firstElementChild.tagName === "H3")) { sawHead = true; break; }
+    }
+    if (sawHead && acc < 29 * 3.2 && kk.length > 1) headOnly.push(`${i + 1}`);
   }
-  document.title = `PAGES=${P.length}|OVER=${over.join(",")}|TOP=${top.join(",")}|ORPHAN=${orphan.join(",")}|EMPTY=${empty.join(",")}`;
+  document.title = `PAGES=${P.length}|OVER=${over.join(",")}|TOP=${top.join(",")}|ORPHAN=${orphan.join(",")}|EMPTY=${empty.join(",")}|HEAD=${headOnly.join(",")}`;
 })();

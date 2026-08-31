@@ -292,6 +292,61 @@
     }
   }
 
+  // R11 — 절 머리가 쪽 끝에 두세 줄만 남거나(orphan), 절 꼬리가 다음 쪽에 두 줄만
+  // 넘어가는(widow) 형태를 정리한다. 책 조판의 기본 규칙이다.
+  {
+    const LINE = 29;                                  // 본문 한 줄 높이
+    const kidsOf = (pg) => [...pg.children].filter((c) => !(c.classList && c.classList.contains("pgnum")));
+    const isHead = (el) => el.tagName === "H3" ||
+      (el.classList && el.classList.contains("keep") &&
+       el.firstElementChild && el.firstElementChild.tagName === "H3");
+
+    for (let k = 0; k < pages.length - 1; k++) {
+      const pg = pages[k], nxt = pages[k + 1];
+
+      // ① orphan — 쪽 끝의 절 머리를 다음 쪽으로 내린다
+      const kk = kidsOf(pg);
+      let acc = 0, headAt = -1;
+      for (let z = kk.length - 1; z >= 0 && z >= kk.length - 3; z--) {
+        acc += kk[z].offsetHeight + mb(kk[z]);
+        if (isHead(kk[z])) { headAt = z; break; }
+      }
+      if (headAt >= 0 && headAt > 0 && acc < LINE * 4.0) {
+        for (let z = kk.length - 1; z >= headAt; z--) nxt.insertBefore(kk[z], nxt.firstChild);
+      }
+
+      // ② widow — 다음 쪽 첫머리의 짧은 꼬리를 이 쪽으로 올린다
+      const nk = kidsOf(nxt);
+      if (nk.length > 1) {
+        const first = nk[0];
+        const h = first.offsetHeight + mb(first);
+        if (!isHead(first) && first.tagName === "P" && h < LINE * 2.4) {
+          pg.appendChild(first);
+          if (fill(pg) > PAGE_H) {
+            nxt.insertBefore(first, nxt.firstChild);
+            // 통째로는 안 올라간다 → 앞 쪽 마지막 문단을 늘려 이 꼬리를 흡수한다
+            const pk = kidsOf(pg);
+            const lastP = pk[pk.length - 1];
+            if (lastP && lastP.tagName === "P" && first.tagName === "P") {
+              const room = PAGE_H - (fill(pg) - (lastP.offsetHeight + mb(lastP)));
+              const merged = document.createElement("p");
+              merged.className = lastP.className;
+              merged.innerHTML = lastP.innerHTML + " " + first.innerHTML;
+              pg.replaceChild(merged, lastP);
+              nxt.removeChild(first);
+              const parts = splitPara(merged, room);
+              if (parts) { nxt.insertBefore(parts[1], nxt.firstChild); }
+              if (fill(pg) > PAGE_H) {                      // 실패하면 원복
+                pg.replaceChild(lastP, merged);
+                nxt.insertBefore(first, nxt.firstChild);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   // R8 — 절 제목이 페이지 끝에 홀로 남으면 다음 쪽으로 내린다(고아 제목)
   for (let k = 0; k < pages.length - 1; k++) {
     const pg = pages[k];

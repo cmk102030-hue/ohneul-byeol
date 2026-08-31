@@ -18,11 +18,11 @@ try:
 finally:
     if os.path.exists(tmp): os.remove(tmp)
 
-m = re.search(r"<title>PAGES=(\d+)\|OVER=([^|]*)\|TOP=([^|]*)\|ORPHAN=([^|]*)\|EMPTY=([^<]*)</title>", out)
+m = re.search(r"<title>PAGES=(\d+)\|OVER=([^|]*)\|TOP=([^|]*)\|ORPHAN=([^|]*)\|EMPTY=([^|]*)\|HEAD=([^<]*)</title>", out)
 if not m:
     print("측정 실패 — 페이지 정보를 회수하지 못했다"); sys.exit(2)
 
-pages, over, top, orphan, empty = m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
+pages, over, top, orphan, empty, headonly = m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6)
 who = os.path.basename(d)
 print("═══ %s — %s쪽\n" % (who, pages))
 
@@ -38,6 +38,7 @@ def report(name, val, unit=""):
 report("하단 침범", over, " (쪽:높이px · 한계 754)")
 report("상단 여백", top, " (쪽:margin)")
 report("고아 제목", orphan)
+report("절머리만", headonly, " (제목+2줄만 쪽 끝에)")
 # 빈 쪽은 조판이 아니라 글 길이 문제 — 경고로만 보고한다
 _e = [x for x in empty.split(",") if x]
 print("  %s 빈 쪽        %s" % ("⚠️ " if _e else "✅", ("%d쪽 — %s (글을 줄이거나 늘려야 한다)" % (len(_e), " ".join(_e))) if _e else "없음"))

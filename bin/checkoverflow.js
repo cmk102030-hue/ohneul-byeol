@@ -7,7 +7,7 @@
   const PAGE = 794, PAD_T = 38, PAD_B = 40;
   const LIMIT = PAGE - PAD_B;                 // 콘텐츠가 넘으면 안 되는 하한
   const P = [...document.querySelectorAll(".page")];
-  const over = [], top = [], orphan = [], empty = [], headOnly = [];
+  const over = [], top = [], orphan = [], empty = [], headOnly = [], widow = [];
 
   for (let i = 0; i < P.length; i++) {
     const pg = P[i], box = pg.getBoundingClientRect().top;
@@ -44,6 +44,16 @@
       if (el.tagName === "H3" || (el.classList.contains("keep") && el.firstElementChild && el.firstElementChild.tagName === "H3")) { sawHead = true; break; }
     }
     if (sawHead && acc < 29 * 3.2 && kk.length > 1) headOnly.push(`${i + 1}`);
+
+    // 앞 쪽에서 넘어온 꼬리가 두 줄 이하로 쪽 머리에 남은 형태(widow)
+    if (i > 0 && kk.length > 1) {
+      const f = kk[0];
+      const fs = getComputedStyle(f);
+      const fh = f.offsetHeight + parseFloat(fs.marginTop) + parseFloat(fs.marginBottom);
+      const fIsHead = f.tagName === "H3" ||
+        (f.classList.contains("keep") && f.firstElementChild && f.firstElementChild.tagName === "H3");
+      if (!fIsHead && f.tagName === "P" && fh < 29 * 2.6) widow.push(`${i + 1}`);
+    }
   }
-  document.title = `PAGES=${P.length}|OVER=${over.join(",")}|TOP=${top.join(",")}|ORPHAN=${orphan.join(",")}|EMPTY=${empty.join(",")}|HEAD=${headOnly.join(",")}`;
+  document.title = `PAGES=${P.length}|OVER=${over.join(",")}|TOP=${top.join(",")}|ORPHAN=${orphan.join(",")}|EMPTY=${empty.join(",")}|HEAD=${headOnly.join(",")}|WIDOW=${widow.join(",")}`;
 })();

@@ -40,6 +40,72 @@
     return [mk(rows.slice(0, fit)), mk(rows.slice(fit))];
   }
 
+  // 문단을 남은 높이에 맞춰 두 조각으로 나눈다 — 책 조판에서 문단은 쪽을 넘어 이어진다.
+  function splitPara(el, avail) {
+    if (el.tagName !== "P") return null;
+    const lineH = parseFloat(getComputedStyle(el).lineHeight) || 24;
+    if (avail < lineH * 2.2) return null;            // 두 줄도 못 넣으면 통째로 넘긴다
+    if (el.offsetHeight < lineH * 3.5) return null;  // 원래 3줄 이하면 쪼개지 않는다
+
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    const nodes = []; let n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    if (!nodes.length) return null;
+    const total = nodes.reduce((a, x) => a + x.data.length, 0);
+    if (total < 60) return null;
+
+    const at = (k) => {
+      let acc = 0;
+      for (const t of nodes) {
+        if (acc + t.data.length >= k) return [t, k - acc];
+        acc += t.data.length;
+      }
+      const last = nodes[nodes.length - 1];
+      return [last, last.data.length];
+    };
+
+    const probe = document.createElement("p");
+    probe.className = el.className;
+    probe.style.cssText = "visibility:hidden";
+    el.parentNode.insertBefore(probe, el);
+    const rng = document.createRange();
+    let lo = 30, hi = total, best = 0;
+    for (let i = 0; i < 12 && lo <= hi; i++) {
+      const mid = (lo + hi) >> 1;
+      const [tn, off] = at(mid);
+      rng.setStart(nodes[0], 0);
+      rng.setEnd(tn, off);
+      probe.innerHTML = "";
+      probe.appendChild(rng.cloneContents());
+      if (probe.offsetHeight <= avail) { best = mid; lo = mid + 1; } else hi = mid - 1;
+    }
+    probe.remove();
+    if (!best || best >= total - 20) return null;
+
+    let cut = best;
+    for (let z = 0; z < 40; z++) {
+      const [t, o] = at(cut);
+      if (o <= 0 || /[\s\u00b7,.]/.test(t.data[o - 1] || " ")) break;
+      cut--;
+    }
+    if (cut < 30) return null;
+
+    const [tn, off] = at(cut);
+    const tailRange = document.createRange();
+    tailRange.setStart(tn, off);
+    tailRange.setEndAfter(nodes[nodes.length - 1]);
+    const frag = tailRange.extractContents();
+    const tail = document.createElement("p");
+    tail.className = el.className;
+    tail.appendChild(frag);
+    if (!tail.textContent.trim() || tail.textContent.trim().length < 25) {
+      el.appendChild(tail.childNodes.length ? tail : document.createTextNode(""));
+      while (tail.firstChild) el.appendChild(tail.firstChild);
+      return null;
+    }
+    return [el, tail];
+  }
+
   // ── 블록 하나 배치
   function place(el) {
     // R1 — 장은 항상 새 페이지에서
@@ -86,6 +152,31 @@
     cur.appendChild(el);
     const h = el.offsetHeight + mb(el);
     if (used + h <= PAGE_H) { used += h; return; }
+
+    // 남은 공간이 아깝다 — 문단은 쪼개서 채우고 나머지를 다음 쪽으로 넘긴다.
+    // keep 덩어리(제목+첫 문단)는 제목 높이를 뺀 나머지로 그 안의 문단을 쪼갠다.
+    const room = PAGE_H - used - mb(el);
+    let target = el, head = 0;
+    if (el.tagName === "DIV" && el.classList.contains("keep")) {
+      const h3 = el.querySelector("h3");
+      const firstP = el.querySelector("p");
+      if (h3 && firstP) { target = firstP; head = h3.offsetHeight + mb(h3); }
+    }
+    const parts = splitPara(target, room - head);
+    if (parts) {
+      used = PAGE_H;                 // 이 쪽은 꽉 찼다
+      newPage();
+      cur.appendChild(parts[1]);
+      used = parts[1].offsetHeight + mb(parts[1]);
+      return;
+    }
+    if (target !== el) {             // keep 안을 못 쪼갰으면 통째로 넘긴다
+      cur.removeChild(el);
+      newPage();
+      cur.appendChild(el);
+      used = el.offsetHeight + mb(el);
+      return;
+    }
     cur.removeChild(el);
 
     // R2 — 직전이 절 제목이고 그것만 남으면 제목도 함께 넘긴다

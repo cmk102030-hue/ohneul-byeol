@@ -188,19 +188,7 @@ const tocPage = toc.length < 4 ? "" : `
 <section class="toc"><h2 class="tt">차례</h2>
 <ol>${toc.map((t) => `<li><i>${t.num}</i><span>${t.title}</span></li>`).join("")}</ol>
 </section>
-<section class="toc guide-page">
-<h3 class="rt">이 리포트를 읽는 법</h3>
-<dl class="guide">
-  <dt>단정과 추정의 구분</dt>
-  <dd>확실한 것은 단정으로 씁니다. 판단인 것은 <b>"~로 봅니다" · "~하기 쉽습니다"</b>로 씁니다. <b>문장의 어미가 곧 확신도입니다.</b> 모든 문장을 단정으로 쓰면 읽는 사람은 어느 것이 확실한지 구분할 수 없고, 그때부터 전부를 의심하게 됩니다.</dd>
-  <dt>근거</dt>
-  <dd>모든 판단은 여덟 글자 중 <b>어느 글자, 어느 자리, 어떤 관계</b>에서 나왔는지를 문장 안에 함께 적었습니다. 근거를 댈 수 없는 문장은 쓰지 않았습니다. 누구에게나 들어맞는 서술을 걸러내기 위한 장치입니다.</dd>
-  <dt>명식 확정 근거</dt>
-  <dd>앞 장에 진태양시 보정값·절입까지의 일수·시진 경계 관습을 공개했습니다. 계산 기준이 다른 만세력과는 결과가 일부 다를 수 있으며, 그 경우 어느 쪽이 틀린 것이 아니라 채택한 관습이 다른 것입니다.</dd>
-  <dt>지나온 시기</dt>
-  <dd>3장 다음에, 지나간 시기를 명식만으로 짚은 대목이 있습니다. <b>일부는 어긋날 수 있습니다.</b> 전부 맞히려면 진술이 넓어지고, 넓은 진술은 맞아도 의미가 없습니다. 자기 기억과 대조해 보시고, 다른 대목이 있다면 알려주십시오.</dd>
-</dl>
-</section>`;
+`;
 
 
 const html = `<!doctype html>
@@ -333,7 +321,7 @@ dl.guide dd { color:var(--ink2); }
 .body tbody tr:nth-child(even) td { background:#faf7f1; }
 .body b { font-weight:700; color:#14100c; }
 .body hr { border:0; border-top:1px solid var(--line); margin:30px 0; }
-blockquote { margin:26px 0; padding:20px 24px; background:var(--gold-bg); border-left:3px solid var(--gold); font:400 17px/1.85 "AppleMyungjo",serif; }
+blockquote { margin:18px 0 22px; padding:13px 17px; background:var(--gold-bg); border-left:2px solid var(--gold); font:400 14.5px/1.75 "Apple SD Gothic Neo",sans-serif; color:var(--ink2); letter-spacing:-.2px; }
 mark { background:linear-gradient(transparent 58%, #f0e2bd 58%); color:inherit; padding:0 1px; }
 mark b { font-weight:700; }
 code { font-family:ui-monospace,Menlo,monospace; font-size:12.5px; background:#f0ebe1; padding:2px 6px; }

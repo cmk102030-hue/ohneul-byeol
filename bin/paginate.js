@@ -47,9 +47,23 @@
 
   // keep이 제목만 담고 있으면(문단 없이) 사실상 h3 — 직후에서 끊으면 고아가 된다
   const isBareHead = (el) =>
-    el.tagName === "H3" ||
+    el.tagName === "H3" || el.tagName === "H4" ||
     (el.tagName === "DIV" && el.classList.contains("keep") &&
      el.children.length === 1 && el.firstElementChild.tagName === "H3");
+  const isAnyHead = (el) => isHead(el) || el.tagName === "H4";
+
+  // 절은 시작하는 쪽에 최소 200px(머리+본문 5줄가량)을 데려간다.
+  // j까지 놓았을 때 마지막 머리부터의 누적이 그에 못 미치면 그 자리는 끊을 수 없다.
+  const SECTION_MIN = 200;
+  const sectionTooShort = (arr, j) => {
+    for (let k = j; k >= 0 && k >= j - 6; k--) {
+      if (isAnyHead(arr[k].el)) {
+        const base = k > 0 ? arr[k - 1].cum : 0;
+        return arr[j].cum - base < SECTION_MIN;
+      }
+    }
+    return false;
+  };
 
   // el 뒤에서 끊는 페널티 (nx = 다음 블록)
   const breakPenalty = (el, nx) => {
@@ -183,11 +197,13 @@
       const nx = j + 1 < placed.length ? placed[j + 1].el : el;
       const pen = breakPenalty(placed[j].el, nx);
       if (pen === Infinity) continue;
+      if (sectionTooShort(placed, j)) continue;             // 절 머리만 조금 남는 자리
       const waste = (PAGE_H - placed[j].cum) / 29;
       options.push({ kind: "back", j, cost: pen + waste * 8 });
     }
-    if (el.tagName === "P") options.push({ kind: "splitP", cost: 50 });
-    if (el.tagName === "TABLE") options.push({ kind: "splitT", cost: 60 });
+    const secShort = placed.length && sectionTooShort(placed, placed.length - 1);
+    if (!secShort && el.tagName === "P") options.push({ kind: "splitP", cost: 50 });
+    if (!secShort && el.tagName === "TABLE") options.push({ kind: "splitT", cost: 60 });
 
     options.sort((a, b2) => a.cost - b2.cost);
     let done = false;

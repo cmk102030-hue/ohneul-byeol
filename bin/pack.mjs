@@ -343,11 +343,6 @@ ${tocPage}
 ${render(md)}
 </div>
 <script>${PAGINATE}</script>
-<div class="foot">
-  <h2>안내</h2>
-  <p>본 분석은 위 명식 확정 근거에 표기된 계산 기준(진태양시 보정 적용 · 시진 경계 정시법 · 절입 기준 월주)에 따라 작성되었습니다. 계산 기준이 다른 만세력과는 일부 결과가 다를 수 있으며, 그 경우 어느 쪽이 틀린 것이 아니라 채택한 관습이 다른 것입니다.</p>
-  <p>사주는 확률적 경향이지 결정론이 아닙니다. 특히 건강에 관한 내용은 의학적 진단이 아니라 구조적 취약 지점과 관리 포인트로만 참고하시기 바랍니다.</p>
-</div>
 </body></html>`;
 
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";

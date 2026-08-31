@@ -165,11 +165,27 @@
       const need = first.offsetHeight + mb(first);
       if (fill(prev) + need > PAGE_H) break;
       prev.appendChild(first);
+      if (fill(prev) > PAGE_H) { pg.insertBefore(first, pg.firstChild); break; }   // 실측이 넘치면 되돌린다
     }
 
   }
   for (const pg of pages.slice()) {
     if (!pg.children.length) { pg.remove(); pages.splice(pages.indexOf(pg), 1); }
+  }
+
+  // R10 — 마지막 안전판: 모든 조정이 끝난 뒤 넘치는 쪽의 꼬리를 다음 쪽으로 내린다
+  for (let k = 0; k < pages.length; k++) {
+    let g = 0;
+    while (fill(pages[k]) > PAGE_H && g++ < 10) {
+      const kids = [...pages[k].children].filter((c) => !(c.classList && c.classList.contains("pgnum")));
+      if (kids.length <= 1) break;
+      const tail = kids[kids.length - 1];
+      if (k + 1 >= pages.length) {
+        const np = document.createElement("div"); np.className = "page";
+        body.appendChild(np); pages.push(np);
+      }
+      pages[k + 1].insertBefore(tail, pages[k + 1].firstChild);
+    }
   }
 
   // R8 — 절 제목이 페이지 끝에 홀로 남으면 다음 쪽으로 내린다(고아 제목)

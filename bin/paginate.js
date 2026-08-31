@@ -167,19 +167,6 @@
       prev.appendChild(first);
     }
 
-    // ② 그래도 자투리(활자면 절반 미만)면, 앞 쪽 꼬리를 내주고 통째로 합친다
-    const rest = bodyOf(pg);
-    if (rest.length && rest.length <= 3 && fill(pg) < PAGE_H * 0.5) {
-      let g2 = 0;
-      while (fill(prev) + fill(pg) > PAGE_H && g2++ < 8) {
-        const tail = bodyOf(prev).pop();
-        if (!tail || bodyOf(prev).length <= 1) break;
-        pg.insertBefore(tail, pg.firstChild);
-      }
-      if (fill(prev) + fill(pg) <= PAGE_H) {
-        for (const el of bodyOf(pg)) prev.appendChild(el);
-      }
-    }
   }
   for (const pg of pages.slice()) {
     if (!pg.children.length) { pg.remove(); pages.splice(pages.indexOf(pg), 1); }

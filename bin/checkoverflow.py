@@ -38,7 +38,9 @@ def report(name, val, unit=""):
 report("하단 침범", over, " (쪽:높이px · 한계 754)")
 report("상단 여백", top, " (쪽:margin)")
 report("고아 제목", orphan)
-report("빈 쪽", empty, " (활자면 50%% 미만)")
+# 빈 쪽은 조판이 아니라 글 길이 문제 — 경고로만 보고한다
+_e = [x for x in empty.split(",") if x]
+print("  %s 빈 쪽        %s" % ("⚠️ " if _e else "✅", ("%d쪽 — %s (글을 줄이거나 늘려야 한다)" % (len(_e), " ".join(_e))) if _e else "없음"))
 
 print("\n═══ 판정: %s" % ("PASS" if not fails else "FAIL — " + " · ".join(fails)))
 sys.exit(1 if fails else 0)

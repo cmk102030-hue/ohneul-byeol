@@ -273,8 +273,10 @@ dl.basis dd { color:var(--ink2); }
 
 /* 측정 기반 페이지네이션 — paginate.js가 .page 단위로 재조립한다 */
 .body[data-paginated] { padding:0; }
-.body[data-paginated] .page { height:794px; padding:56px 58px 62px; page-break-after:always; break-after:page; overflow:hidden; }
+.page { padding:56px 58px 62px; }   /* 측정 단계부터 같은 폭이어야 조판이 맞는다 */
+.body[data-paginated] .page { height:794px; page-break-after:always; break-after:page; overflow:hidden; }
 .body[data-paginated] .page { position:relative; }
+.body[data-paginated] .page > :first-child { margin-top:0; }
 .pgnum { position:absolute; bottom:24px; left:0; right:0; text-align:center; font-style:normal; font-size:9.5px; letter-spacing:1.2px; color:#b8ad99; }
 .toc ol li { position:relative; }
 .tpg { position:absolute; right:0; font-weight:400; font-size:12.5px; color:#9b917f; }

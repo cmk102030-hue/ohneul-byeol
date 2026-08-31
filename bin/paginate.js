@@ -133,8 +133,12 @@
       const mark2 = pages.length - 1;
       layout();
       if (pages.length - mark2 >= before) {
-        // 줄지 않았으면 압축을 되돌린다 (촘촘하게 만들 이유가 없다)
-        for (const b of chap) b.classList.remove("tight");
+        // 줄지 않았으면 압축을 되돌린다 — 클래스만 떼면 배치가 어긋나므로 재배치까지 한다
+        const rb2 = pages.splice(mark + 1);
+        for (const pg of rb2) pg.remove();
+        for (const b of chap) { b.remove(); b.classList.remove("tight"); }
+        cur = pages[mark]; used = fillOf(cur) * PAGE_H;
+        layout();
       }
     }
   }
@@ -149,8 +153,27 @@
       (last.classList && last.classList.contains("keep") &&
        last.children.length === 1 && last.firstElementChild.tagName === "H3"));
     if (isOrphan) {
+      const nxt = pages[k + 1];
       pg.removeChild(last);
-      pages[k + 1].insertBefore(last, pages[k + 1].firstChild);
+      nxt.insertBefore(last, nxt.firstChild);
+      // 옮긴 만큼 다음 쪽이 넘치면 꼬리를 그 다음 쪽으로 연쇄 이동
+      let cur2 = k + 1;
+      while (cur2 < pages.length) {
+        const pgx = pages[cur2];
+        let h = 0;
+        for (const c of pgx.children) {
+          if (c.classList && c.classList.contains("pgnum")) continue;
+          h += c.offsetHeight + mb(c);
+        }
+        if (h <= PAGE_H) break;
+        let tail = pgx.lastElementChild;
+        while (tail && tail.classList && tail.classList.contains("pgnum")) tail = tail.previousElementSibling;
+        if (!tail || pgx.children.length <= 1) break;
+        if (cur2 + 1 >= pages.length) { const np = document.createElement("div"); np.className = "page"; body.appendChild(np); pages.push(np); }
+        pgx.removeChild(tail);
+        pages[cur2 + 1].insertBefore(tail, pages[cur2 + 1].firstChild);
+        cur2++;
+      }
     }
   }
 
@@ -158,13 +181,14 @@
     if (!pg.children.length) { pg.remove(); pages.splice(pages.indexOf(pg), 1); }
   }
   // 쪽번호 + 차례 쪽수 — 본문 기준(표지·차례 제외), 책 관례
+  const FRONT = document.querySelectorAll("section.cover, section.toc").length;   // 표지·차례 = 앞장
   const chapPage = {};
   pages.forEach((pg, i) => {
     const num = document.createElement("i");
-    num.className = "pgnum"; num.textContent = i + 1;
+    num.className = "pgnum"; num.textContent = i + 1 + FRONT;   // PDF 물리 쪽수와 일치
     pg.appendChild(num);
     const h = pg.querySelector("h2.chap > i");
-    if (h) { const k = h.textContent.trim(); if (!(k in chapPage)) chapPage[k] = i + 1; }
+    if (h) { const k = h.textContent.trim(); if (!(k in chapPage)) chapPage[k] = i + 1 + FRONT; }
   });
   document.querySelectorAll(".toc ol li").forEach((li) => {
     const k = li.querySelector("i")?.textContent?.trim();

@@ -176,13 +176,26 @@
   // R10 — 마지막 안전판: 모든 조정이 끝난 뒤 넘치는 쪽의 꼬리를 다음 쪽으로 내린다
   for (let k = 0; k < pages.length; k++) {
     let g = 0;
-    while (fill(pages[k]) > PAGE_H && g++ < 10) {
+    while (fill(pages[k]) > PAGE_H && g++ < 40) {
       const kids = [...pages[k].children].filter((c) => !(c.classList && c.classList.contains("pgnum")));
       if (kids.length <= 1) break;
       const tail = kids[kids.length - 1];
       if (k + 1 >= pages.length) {
         const np = document.createElement("div"); np.className = "page";
         body.appendChild(np); pages.push(np);
+      }
+      // 표 하나가 통째로 넘칠 때는 행 단위로 쪼갠다
+      if (tail.tagName === "TABLE") {
+        const room = PAGE_H - (fill(pages[k]) - (tail.offsetHeight + mb(tail)));
+        const parts = splitTable(tail, room);
+        if (parts) {
+          pages[k].replaceChild(parts[0], tail);
+          pages[k + 1].insertBefore(parts[1], pages[k + 1].firstChild);
+          if (fill(pages[k]) > PAGE_H) continue;   // 아직 넘치면 다음 꼬리로
+          break;
+        }
+        // 쪼갤 수 없는 표(본문 1행)는 통째로 내린다 — 아래로 흐름
+
       }
       pages[k + 1].insertBefore(tail, pages[k + 1].firstChild);
     }
